@@ -9,7 +9,7 @@ use server_sent_events::create_app;
 async fn main() {
     // logging configuration from the `SSE_LOG` environemnt variable
     let env_filter = EnvFilter::try_from_env("SSE_LOG")
-        .unwrap_or_else(|_| "server_sent_events=debug,tower_http=debug".into());
+        .unwrap_or_else(|_| "server_sent_events=debug,tower_http=debug,rdkafka=debug".into());
 
     // setup logging
     tracing_subscriber::registry()
