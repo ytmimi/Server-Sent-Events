@@ -42,6 +42,20 @@ services:
     volumes:
       - ./volume/kafka/data:/var/lib/kafka/data
 
+  dynamodb-local:
+    image: "amazon/dynamodb-local:latest"
+    restart: on-failure
+    hostname: dynamodb
+    container_name: sse_dynamodb-local
+    ports:
+      - "8111:8111"
+    networks:
+        - docker-network
+    volumes:
+      - "./volume/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
+    command: -jar DynamoDBLocal.jar -sharedDb -port 8111 -dbPath ./data
+
 networks:
   docker-network:
     driver: bridge
