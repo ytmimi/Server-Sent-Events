@@ -19,11 +19,10 @@ pub fn create_app_v2(sender: Sender<Command>, receiver: Receiver<Command>) -> Ro
         command_sender: sender,
     };
 
-    let router = Router::new()
+    Router::new()
         .route("/sse", get(sse_handler))
         .route("/message", post(send_message))
-        .with_state(state);
-    router
+        .with_state(state)
 }
 
 #[derive(Clone)]
@@ -64,9 +63,9 @@ async fn handle_command_messages(mut receiver: Receiver<Command>) {
                 tracing::info!("sending message to {username:?}");
                 match map.get(&username) {
                     Some(tx) => {
-                        let _ = tx.send(message).await.or_else(|err| {
+                        let _ = tx.send(message).await.map_err(|err| {
                             tracing::error!("Failed to send message to {username:?}");
-                            Err(err)
+                            err
                         });
                     }
                     None => {

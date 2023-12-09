@@ -58,10 +58,7 @@ async fn listen_for_kafka_message(sender: Sender<Command>) {
                     continue 'consumer_loop;
                 };
 
-                let message = Command::Message {
-                    username: username,
-                    message: message,
-                };
+                let message = Command::Message { username, message };
                 if let Err(err) = sender.send(message).await {
                     tracing::error!("couldn't send kafka message to {err:?}");
                 }
