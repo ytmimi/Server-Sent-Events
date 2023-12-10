@@ -8,7 +8,7 @@ use tokio::sync::mpsc::{channel, Receiver, Sender};
 use tokio_stream::StreamExt as _;
 use uuid::Uuid;
 
-use super::app_events::{AppEvent, Report, ServerSentEventMessage};
+use super::app_events::{AppEvent, Report, ReportStatusUpdate, ServerSentEventMessage};
 use super::tasks::handle_user_disconnect;
 use super::V4AppState;
 
@@ -133,4 +133,24 @@ where
     }
 
     (StatusCode::OK, Ok(Json(reports)))
+}
+
+pub(super) async fn change_report_status<D>(
+    State(state): State<V4AppState<D>>,
+    Query(params): Query<QueryParams>,
+    Json(update): Json<ReportStatusUpdate>,
+) -> StatusCode {
+    if let Err(err) = state.report_status_sender.send(update).await {
+        tracing::error!(
+            "Unable to to send report status update message for user {}. {err:?}",
+            params.user_id
+        );
+        StatusCode::INTERNAL_SERVER_ERROR
+    } else {
+        tracing::info!(
+            "Successfully sent report status update message for user {}",
+            params.user_id
+        );
+        StatusCode::ACCEPTED
+    }
 }

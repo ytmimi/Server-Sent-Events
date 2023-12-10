@@ -9,6 +9,8 @@ use tokio::sync::mpsc::Sender;
 
 use crate::v4::app_events::{AppEvent, ReportStatusUpdate};
 
+pub(super) const KAFKA_TOPIC: &str = "v4_messages";
+
 /// Continuously listen for messages on the `v4_messages` Kafka topic
 pub(super) async fn consume_kafka_messages(sender: Sender<AppEvent>) {
     let mut config = ClientConfig::new();
@@ -24,7 +26,7 @@ pub(super) async fn consume_kafka_messages(sender: Sender<AppEvent>) {
         return;
     };
 
-    let topics = ["v4_messages"];
+    let topics = [KAFKA_TOPIC];
 
     if let Err(err) = consumer.subscribe(&topics) {
         tracing::error!("Could not subscribe to kafka topics {topics:?}. {err:?}");
