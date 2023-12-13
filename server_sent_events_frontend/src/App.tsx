@@ -1,35 +1,20 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import { useState } from "react";
+import { ServerSentEventClient } from "./client";
+import { Login } from "./components/Login";
+import { ReportStatusTable } from "./components/ReportStatusTable";
 
 function App() {
-  const [count, setCount] = useState(0)
+  // userId for testing = "046fe7f4-c0e6-4d51-81ab-572deddc8142"
+  const [userId, setUserId] = useState<string>("");
+  const baseUrl = "http://localhost:3000/v4";
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  if (!userId) {
+    return <Login userId={userId} setUserId={setUserId} />;
+  } else {
+    const client = new ServerSentEventClient(baseUrl, userId);
+    return <ReportStatusTable client={client} />;
+  }
 }
 
-export default App
+export default App;
