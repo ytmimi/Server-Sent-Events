@@ -1,6 +1,7 @@
 //! Based on the Server-Sent-Event example in the axum crate:
 //! <https://github.com/tokio-rs/axum/blob/main/examples/sse/src/main.rs>
 use tower_http::trace::TraceLayer;
+use tower_http::cors::CorsLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
 use server_sent_events::{create_app, get_dynamo_db_client};
@@ -21,7 +22,9 @@ async fn main() {
     let dynamodb_client = std::sync::Arc::new(get_dynamo_db_client().await);
 
     // build our application and add a middleware layer to enable tracing (logging)
-    let app = create_app(dynamodb_client).layer(TraceLayer::new_for_http());
+    let app = create_app(dynamodb_client)
+        .layer(TraceLayer::new_for_http())
+        .layer(CorsLayer::permissive());
 
     // run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
