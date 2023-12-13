@@ -12,8 +12,7 @@ pub(super) async fn produce_kafka_messages(mut reciever: Receiver<ReportStatusUp
     let mut config = ClientConfig::new();
     config
         .set("bootstrap.servers", "localhost:9092")
-        .set("message.timeout.ms", "5000")
-        .set("enable.auto.commit", "false");
+        .set("message.timeout.ms", "5000");
 
     // todo setup Kafka producer
     let Ok(producer): KafkaResult<FutureProducer> = config.create() else {
